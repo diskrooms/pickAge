@@ -415,7 +415,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private void configureTransform(int viewWidth, int viewHeight) {
         //Activity activity = getActivity();
-        if (null == textureView || null == mPreviewSize || null == PhotoActivity.this) {
+        if (null == textureView || null == mPreviewSize || null == MainActivity.this) {
             return;
         }
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -446,8 +446,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         backgroundhandlerThread.start();
         backgroundhandler = new Handler(backgroundhandlerThread.getLooper());
         mCameraId = "" + CameraCharacteristics.LENS_FACING_FRONT;   //前置摄像头
-        int width = CommonUtils.getScreenWidth(PhotoActivity.this);
-        int height = CommonUtils.getScreenHeight(PhotoActivity.this);
+        int width = CommonUtils.getScreenWidth(MainActivity.this);
+        int height = CommonUtils.getScreenHeight(MainActivity.this);
 
         setUpCameraOutput(width,height);
         configureTransform(width, height);
@@ -467,7 +467,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 if (bitmap != null) {
                     //iv_show.setImageBitmap(bitmap);
                     //LogUtils.v(bitmap);
-                    Intent captureIntent = new Intent(PhotoActivity.this,SystemBrowseImageActivity.class);
+                    Intent captureIntent = new Intent(MainActivity.this,BrowseImageActivity.class);
                     startActivity(captureIntent);
                 }
             }
@@ -511,7 +511,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         @Override
         public void onError(CameraDevice camera, int error) {
-            Toast.makeText(PhotoActivity.this, "摄像头开启失败,请前往设置或者安全中心开启摄像头权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "摄像头开启失败,请前往设置或者安全中心开启摄像头权限", Toast.LENGTH_SHORT).show();
 
         }
     };
@@ -556,7 +556,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
                 @Override
                 public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-                    Toast.makeText(PhotoActivity.this, "配置失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "配置失败", Toast.LENGTH_SHORT).show();
                 }
             }, backgroundhandler);
         } catch (CameraAccessException e) {
@@ -628,7 +628,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private void showToast(final String s){
         runOnUiThread(new Runnable(){
             public void run(){
-                Toast.makeText(PhotoActivity.this, s, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -666,7 +666,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
-            Intent loadOneImageIntent = new Intent(this,SystemBrowseImageActivity.class);
+            Intent loadOneImageIntent = new Intent(this,BrowseImageActivity.class);
             loadOneImageIntent.putExtra("path",imagePath);
             startActivity(loadOneImageIntent);
             c.close();
@@ -763,7 +763,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private void captureStillPicture() {
         LogUtils.v("captureStillPicture");
         try {
-            final Activity activity = PhotoActivity.this;
+            final Activity activity = MainActivity.this;
             if (null == activity || null == mCameraDevice) {
                 return;
             }
