@@ -524,6 +524,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         try {
             // 创建预览需要的CaptureRequest.Builder
             previewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //LogUtils.v(previewRequestBuilder);
             // 将SurfaceView的surface作为CaptureRequest.Builder的目标
             SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
             surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight());
@@ -678,6 +679,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     //拍照
     public void photo(){
         try {
+            //LogUtils.v(previewRequestBuilder);
             // This is how to tell the camera to lock focus.
             previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the lock.
