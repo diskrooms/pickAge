@@ -64,7 +64,7 @@ public class BrowseImageActivity extends AppCompatActivity implements View.OnCli
         if(type.equals(1)){
             path = intent.getStringExtra("path");
             //加载图片
-            //LogUtils.v(CommonUtils.getPicDegree(path));
+            LogUtils.v(path);
             originBitmap = BitmapFactory.decodeFile(path);
             showImage = (ImageView)findViewById(R.id.browseImage);
             share = (CircularImageView)findViewById(R.id.share);

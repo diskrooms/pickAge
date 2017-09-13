@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         @Override
         public void onImageAvailable(ImageReader reader) {
             backgroundhandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
-            
+
         }
 
     };
@@ -851,8 +851,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
-                    showToast("Saved: " + mFile);
-                    LogUtils.v(mFile.toString());
+                    //showToast("Saved: " + mFile);
+                    //LogUtils.v(mFile.toString());
+
+                    //启动 BrowseImageActivity
+                    Intent intent = new Intent(MainActivity.this,BrowseImageActivity.class);
+                    intent.putExtra("type","1");
+                    intent.putExtra("path",mFile.toString());
+                    startActivity(intent);
                     unlockFocus();
                 }
             };
