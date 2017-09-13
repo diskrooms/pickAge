@@ -117,15 +117,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      * Saves a JPEG {@link Image} into the specified {@link File}.
      */
     private static class ImageSaver implements Runnable {
-        /**
-         * The JPEG image
-         */
-        private final Image mImage;
-        /**
-         * The file we save the image into.
-         */
-        private final File mFile;
 
+        private final Image mImage;
+        private final File mFile;
         public ImageSaver(Image image, File file) {
             mImage = image;
             mFile = file;
@@ -816,14 +810,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      */
     private void captureStillPicture() {
         //LogUtils.v("captureStillPicture");
+
         try {
             final Activity activity = MainActivity.this;
             if (null == activity || null == mCameraDevice) {
                 return;
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
-            final CaptureRequest.Builder captureBuilder =
-                    mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
             //点击拍照最关键一行
             captureBuilder.addTarget(mImageReader.getSurface());
@@ -841,7 +835,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             //setAutoFlash(captureBuilder);
 
             // Orientation
-            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
             //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
 
             CameraCaptureSession.CaptureCallback CaptureCallback
@@ -851,21 +845,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
-                    //showToast("Saved: " + mFile);
-                    //LogUtils.v(mFile.toString());
-
+                    showToast("Saved: " + mFile);
                     //启动 BrowseImageActivity
                     Intent intent = new Intent(MainActivity.this,BrowseImageActivity.class);
                     intent.putExtra("type","1");
                     intent.putExtra("path",mFile.toString());
                     startActivity(intent);
-                    unlockFocus();
                 }
             };
 
             mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
-        } catch (CameraAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -969,7 +960,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
             CaptureRequest captureRequest = previewRequestBuilder.build();
             previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, null); // prevent CONTROL_AF_TRIGGER_START from calling over and over again
-            mCaptureSession.capture(captureRequest, mCaptureCallback, backgroundhandler);
+            if(mCaptureSession != null) {
+                mCaptureSession.capture(captureRequest, mCaptureCallback, backgroundhandler);
+            }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }

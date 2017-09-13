@@ -61,7 +61,7 @@ public class BrowseImageActivity extends AppCompatActivity implements View.OnCli
         Intent intent = getIntent();
         String type = intent.getStringExtra("type");
         //LogUtils.v(type);
-        if(type.equals(1)){
+        if(type.equals("1")){
             path = intent.getStringExtra("path");
             //加载图片
             LogUtils.v(path);
