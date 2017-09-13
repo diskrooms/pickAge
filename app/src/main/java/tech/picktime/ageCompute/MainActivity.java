@@ -192,6 +192,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         @Override
         public void onImageAvailable(ImageReader reader) {
             backgroundhandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            
         }
 
     };
@@ -452,26 +453,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         setUpCameraOutput(width,height);
         configureTransform(width, height);
         //mImageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
-        mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() { //可以在这里处理拍照得到的临时照片 例如，写入本地
+
+        // 拿到拍照照片数据
+        //1.直接拿到bitmap数据传入initent 容易数据溢出
+        /*mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader reader) {
                 mCameraDevice.close();
-                //textureView.setVisibility(View.GONE);
-                //iv_show.setVisibility(View.VISIBLE);
-                // 拿到拍照照片数据
                 Image image = reader.acquireNextImage();
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 byte[] bytes = new byte[buffer.remaining()];
+                Intent captureIntent = new Intent(MainActivity.this,BrowseImageActivity.class);
+                captureIntent.putExtra("type","2");
+                //captureIntent.putExtra("bmp",bytes); //数据太长会报 TransactionTooLargeException 异常
+                startActivity(captureIntent);
                 buffer.get(bytes);//由缓冲区存入字节数组
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 if (bitmap != null) {
-                    //iv_show.setImageBitmap(bitmap);
-                    //LogUtils.v(bitmap);
-                    Intent captureIntent = new Intent(MainActivity.this,BrowseImageActivity.class);
-                    startActivity(captureIntent);
+                    iv_show.setImageBitmap(bitmap);
+                    LogUtils.v(bitmap);
                 }
+                Intent howOldIntent = new Intent(MainActivity.this,BrowseImageActivity.class);
+                startActivity(howOldIntent);
             }
-        }, backgroundhandler);
+        }, backgroundhandler);*/
+
+        //2.先把图片存入sdcard或者缓存 然后再到另一个acvitiy上去取
+        mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, backgroundhandler);
 
         //获取摄像头管理
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -542,10 +550,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                     // 当摄像头已经准备好时，开始显示预览
                     mCaptureSession = cameraCaptureSession;
                     try {
-                        // 自动对焦
-                        previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        //检测是否支持自动对焦
+                        ////2017-09-13修改 start
+                        if(isAutoFocusSupported()){
+                            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                        } else {
+                            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        }
+                        ////2017-09-13修改 start
+
                         // 打开闪光灯
-                        previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                        //previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
                         //previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_SCENE_MODE_SNOW);
                         // 显示预览
                         CaptureRequest previewRequest = previewRequestBuilder.build();
@@ -700,18 +715,55 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             switch (mState) {
                 case STATE_PREVIEW: {
                     // We have nothing to do when the camera preview is working normally.
+                    //2017-09-13添加 start
+                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                    if (afState != null && !afState.equals(mLastAfState)) {
+                        switch (afState) {
+                            case CaptureResult.CONTROL_AF_STATE_INACTIVE:
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_INACTIVE");
+                                lockAutoFocus();
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN:
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN");
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED:
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED");
+                                mUiHandler.removeCallbacks(mLockAutoFocusRunnable);
+                                mUiHandler.postDelayed(mLockAutoFocusRunnable, LOCK_FOCUS_DELAY_ON_FOCUSED);
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+                                mUiHandler.removeCallbacks(mLockAutoFocusRunnable);
+                                mUiHandler.postDelayed(mLockAutoFocusRunnable, LOCK_FOCUS_DELAY_ON_UNFOCUSED);
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED");
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+                                mUiHandler.removeCallbacks(mLockAutoFocusRunnable);
+                                //mUiHandler.postDelayed(mLockAutoFocusRunnable, LOCK_FOCUS_DELAY_ON_UNFOCUSED);
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED");
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN:
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN");
+                                break;
+                            case CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+                                mUiHandler.removeCallbacks(mLockAutoFocusRunnable);
+                                //mUiHandler.postDelayed(mLockAutoFocusRunnable, LOCK_FOCUS_DELAY_ON_FOCUSED);
+                                //LogUtils.v("CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED");
+                                break;
+                        }
+                    }
+                    mLastAfState = afState;
+                    //2017-09-13添加 end
                     break;
                 }
                 case STATE_WAITING_LOCK: {
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                    //LogUtils.v(afState);  //CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED
                     if (afState == null) {
                         captureStillPicture();
-                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
+                    } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                         // CONTROL_AE_STATE can be null on some devices
                         Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-                        if (aeState == null ||
-                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                        if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
                             mState = STATE_PICTURE_TAKEN;
                             captureStillPicture();
                         } else {
@@ -763,7 +815,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      * {@link #mCaptureCallback} from both {@link #}.
      */
     private void captureStillPicture() {
-        LogUtils.v("captureStillPicture");
+        //LogUtils.v("captureStillPicture");
         try {
             final Activity activity = MainActivity.this;
             if (null == activity || null == mCameraDevice) {
@@ -777,8 +829,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             captureBuilder.addTarget(mImageReader.getSurface());
 
             // Use the same AE and AF modes as the preview.
-            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            ////2017-09-13修改 start
+            if(isAutoFocusSupported()){
+                captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        CaptureRequest.CONTROL_AF_MODE_AUTO);
+            } else {
+                captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            }
+            ////2017-09-13修改 end
             //setAutoFlash(captureBuilder);
 
             // Orientation
@@ -794,7 +853,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                                                @NonNull TotalCaptureResult result) {
                     showToast("Saved: " + mFile);
                     LogUtils.v(mFile.toString());
-                    //unlockFocus();
+                    unlockFocus();
                 }
             };
 
@@ -866,20 +925,120 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      * Unlock the focus. This method should be called when still image capture sequence is
      * finished.
      */
-    /*private void unlockFocus() {
+    private void unlockFocus() {
         try {
             // Reset the auto-focus trigger
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                     CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            setAutoFlash(mPreviewRequestBuilder);
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+            //setAutoFlash(previewRequestBuilder);
+            mCaptureSession.capture(previewRequestBuilder.build(), mCaptureCallback,
+                    backgroundhandler);
             // After this, the camera will go back to the normal state of preview.
             mState = STATE_PREVIEW;
-            mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
-                    mBackgroundHandler);
+            CaptureRequest previewRequest = previewRequestBuilder.build();
+            mCaptureSession.setRepeatingRequest(previewRequest, mCaptureCallback,
+                    backgroundhandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-    }*/
+    }
+
+    ////////////////////////////////////////
+    ////2017-09-13添加 start
+    private static final long LOCK_FOCUS_DELAY_ON_FOCUSED = 5000;
+    private static final long LOCK_FOCUS_DELAY_ON_UNFOCUSED = 1000;
+
+    private Integer mLastAfState = null;
+    private Handler mUiHandler = new Handler(); // UI handler
+    private Runnable mLockAutoFocusRunnable = new Runnable() {
+        @Override
+        public void run() {
+            lockAutoFocus();
+        }
+    };
+
+    public void lockAutoFocus() {
+        try {
+            // This is how to tell the camera to lock focus.
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+            CaptureRequest captureRequest = previewRequestBuilder.build();
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, null); // prevent CONTROL_AF_TRIGGER_START from calling over and over again
+            mCaptureSession.capture(captureRequest, mCaptureCallback, backgroundhandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    private float getMinimumFocusDistance() {
+        if (mCameraId == null)
+            return 0;
+
+        Float minimumLens = null;
+        try {
+            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            CameraCharacteristics c = manager.getCameraCharacteristics(mCameraId);
+            minimumLens = c.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        } catch (Exception e) {
+            LogUtils.v("isHardwareLevelSupported Error", e);
+        }
+        if (minimumLens != null)
+            return minimumLens;
+        return 0;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private boolean isAutoFocusSupported() {
+        return  isHardwareLevelSupported(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) || getMinimumFocusDistance() > 0;
+    }
+
+    // Returns true if the device supports the required hardware level, or better.
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private boolean isHardwareLevelSupported(int requiredLevel) {
+        boolean res = false;
+        if (mCameraId == null)
+            return res;
+        try {
+            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(mCameraId);
+
+            int deviceLevel = cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+            switch (deviceLevel) {
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3:
+                    //LogUtils.v("Camera support level: INFO_SUPPORTED_HARDWARE_LEVEL_3");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
+                    //LogUtils.v("Camera support level: INFO_SUPPORTED_HARDWARE_LEVEL_FULL");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
+                    //LogUtils.v("Camera support level: INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
+                    //LogUtils.v("Camera support level: INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED");
+                    break;
+                default:
+                    //LogUtils.v("Unknown INFO_SUPPORTED_HARDWARE_LEVEL: " + deviceLevel);
+                    break;
+            }
+
+
+            if (deviceLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
+                res = requiredLevel == deviceLevel;
+            } else {
+                // deviceLevel is not LEGACY, can use numerical sort
+                res = requiredLevel <= deviceLevel;
+            }
+
+        } catch (Exception e) {
+            LogUtils.v("isHardwareLevelSupported Error", e);
+        }
+        return res;
+    }
+    ////2017-09-13添加 end
 }
