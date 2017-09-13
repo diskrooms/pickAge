@@ -1,4 +1,4 @@
-package tech.picktime.ageCompute.;
+package tech.picktime.ageCompute;
 
 import org.junit.Test;
 
