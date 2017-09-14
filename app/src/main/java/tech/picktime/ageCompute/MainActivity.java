@@ -69,6 +69,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import tech.picktime.ageCompute.Utils.ImageUtils;
+
 import static android.view.KeyEvent.KEYCODE_BACK;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -102,7 +104,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private File mFile;
     private int mState = STATE_PREVIEW; //
     private CaptureRequest.Builder previewRequestBuilder;
-    private String[] permissions = {Manifest.permission.CAMERA};
+    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE}; //需要动态申请的权限集合
     //UI控件
     private ImageButton openGallery;                                    //打开图库按钮
     private ImageView photo;                                            //点击拍照按钮
@@ -254,8 +256,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         //surfaceHolder.addCallback(new surfaceHolderCallback());
         //本机全屏宽高比
         currentSize = new Size(CommonUtils.getScreenHeight(this),CommonUtils.getScreenWidth(this));
+
         //
-        mFile = new File(getExternalFilesDir(null), "pic.jpg");
+        mFile = new File(getExternalFilesDir(null), ImageUtils.createPicName("_ageCompute_","jpg"));
     }
 
 
@@ -272,9 +275,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      */
     private static Size chooseSuitableSize(Size[] choices, int textureViewWidth, int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
         // Collect the supported resolutions that are at least as big as the preview Surface
+        //LogUtils.v(choices);
+        //LogUtils.v(textureViewWidth);
+        //LogUtils.v(textureViewHeight);
+        //LogUtils.v(maxWidth);
+        //LogUtils.v(maxHeight);
+        //LogUtils.v(aspectRatio);
 
         List<Size> bigEnough = new ArrayList<>();
         // Collect the supported resolutions that are smaller than the preview Surface
+        //可选的宽高要比 最大尺寸maxWidth和maxHeight要小 并且要和当前尺寸宽高比aspectRatio保持一致
+        //如果宽和高都比textureView大 就入选 bigEnough 否则就入选 notBigEnough
         List<Size> notBigEnough = new ArrayList<>();
         int w = aspectRatio.getWidth();
         int h = aspectRatio.getHeight();
@@ -308,11 +319,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      */
     private void setUpCameraOutput(int width,int height){
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
 
+        try {
+            //LogUtils.v(manager.getCameraIdList());
             for (String cameraId : manager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(cameraId);
+                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
 
                 // We don't use a front facing camera in this sample.
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
@@ -329,6 +340,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CommonUtils.CompareSizesByArea());
 
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+
                 //mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, backgroundhandler);
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
@@ -383,7 +395,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 //LogUtils.v(largest);
                 //LogUtils.v(map.getOutputSizes(SurfaceTexture.class));
 
-                mPreviewSize = chooseSuitableSize(map.getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, currentSize);
+                mPreviewSize =   chooseSuitableSize(map.getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, currentSize);
 
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 int orientation = getResources().getConfiguration().orientation;
@@ -526,7 +538,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         try {
             // 创建预览需要的CaptureRequest.Builder
             previewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            //LogUtils.v(previewRequestBuilder);
             // 将SurfaceView的surface作为CaptureRequest.Builder的目标
             SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
             surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight());
@@ -625,13 +636,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
-        backgroundhandlerThread.quitSafely();
-        try {
-            backgroundhandlerThread.join();
-            backgroundhandlerThread = null;
-            backgroundhandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(backgroundhandlerThread != null) {
+            backgroundhandlerThread.quitSafely();
+            try {
+                backgroundhandlerThread.join();
+                backgroundhandlerThread = null;
+                backgroundhandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -656,12 +669,50 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 //启动自定义相册
                 //Intent openGalleryIntent = new Intent(this,ListImageActivity.class);
                 //startActivity(openGalleryIntent);
-                //调用系统相册
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent,1);
+
+                //6.0动态申请权限 检查是否有读取文件权限 有就读取文件 没有就提示申请文件
+                if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    //ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE);
+                    //没有权限
+                    //是否要向用户解释这个权限 返回true则向用户弹出解释对话框 返回false则不解释直接进行权限申请
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)){
+                        //LogUtils.v("解释");
+                    } else {
+                        //LogUtils.v("不解释直接申请");
+                        ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
+
+                    }
+
+                } else {
+                    //调用系统相册
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.putExtra("type",1);
+                    startActivityForResult(intent, 1);
+                }
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 用户权限申请的回调
+     * 结果发送到该函数上
+     * @param requestCode   请求权限时发送的自定义整形数
+     * @param permission
+     * @param grantResults  用户反馈结果
+     */
+    public void onRequestPermissionsResult(int requestCode, String[] permission, int[] grantResults){
+        switch(requestCode){
+            case 1:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //用户同意了授权 调用系统相册
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.putExtra("type",1);
+                    startActivityForResult(intent, 1);
+                } else {
+                    //用户拒绝了授权
+                }
         }
     }
 
