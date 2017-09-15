@@ -178,23 +178,4 @@ public class CommonUtils {
         return newBitmap;
     }
 
-    /**
-     * 获取指定文件大小
-     * @return
-     * @throws Exception
-     */
-    public static long getFileSize(File file) throws Exception
-    {
-        long size = 0;
-        if (file.exists()){
-            FileInputStream fis = null;
-            fis = new FileInputStream(file);
-            size = fis.available();
-        }
-        else{
-            file.createNewFile();
-            //Log.e("获取文件大小","文件不存在!");
-        }
-        return size;
-    }
 }

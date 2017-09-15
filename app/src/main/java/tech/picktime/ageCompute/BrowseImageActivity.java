@@ -58,12 +58,13 @@ public class BrowseImageActivity extends AppCompatActivity implements View.OnCli
 
     //face++ url
     private static final String faceUrl = "https://api-cn.faceplusplus.com/facepp/v3/detect";
+
     //face++ key
-    private static final String faceKey = "oBeHtmSwrYpe4jLhrYnbJH4jknvEZoOZ";
-    //private static final String faceKey = "XCTi9-nfIa5-51Xm6kMFxDIy7yFBcTCL";
+    private static final String faceKey = "oBeHtmSwrYpe4jLhrYnbJH4jknvEZoOZ";   //试用版
+    //private static final String faceKey = "XCTi9-nfIa5-51Xm6kMFxDIy7yFBcTCL"; //正式版
     //face++ secret
-    private static final String faceSecret = "iBgppyrxA_f4e4nTbkXy8rQemTpU3ULF";
-    //private static final String faceSecret = "aL6OMAhPwgiKziOdIU-pjmfoinmcDV15";
+    private static final String faceSecret = "iBgppyrxA_f4e4nTbkXy8rQemTpU3ULF";    //试用版
+    //private static final String faceSecret = "aL6OMAhPwgiKziOdIU-pjmfoinmcDV15";  //正式版
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +157,8 @@ public class BrowseImageActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             LogUtils.v(response.body().string());
+
+                            //Toast.makeText(BrowseImageActivity.this,"abc",Toast.LENGTH_LONG);
                         }
                     });
                 break;

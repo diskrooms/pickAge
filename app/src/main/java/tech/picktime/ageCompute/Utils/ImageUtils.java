@@ -1,10 +1,12 @@
 package tech.picktime.ageCompute.Utils;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 import com.apkfuns.logutils.LogUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,7 +21,6 @@ import java.util.Date;
  * 图片相关工具类 based on FileUtil
  */
 public class ImageUtils extends FileUtil{
-
     /**
      *  将bitmap保存为图片
      *  @param bitmap 图片资源
@@ -74,10 +75,8 @@ public class ImageUtils extends FileUtil{
             if (bitmap != null) {
                 baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
                 baos.flush();
                 baos.close();
-
                 byte[] bitmapBytes = baos.toByteArray();
                 result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
             }
@@ -95,4 +94,75 @@ public class ImageUtils extends FileUtil{
         }
         return result;
     }
+
+    /**
+     * 图片压缩 不保存图片 接收bitmap 返回一个压缩的体量更小的bitmap
+     * bitmap 待压缩的图片资源
+     * type  图片压缩格式 1 JPEG  2 PNG  3 WEBP
+     * scale 压缩比例
+     */
+    public static Bitmap compressBitmap(Bitmap originBitmap,int type,int scale) {
+        Bitmap newBitmap = null;
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            //将bitmap放入流中
+            switch (type){
+                case 1:
+                    originBitmap.compress(Bitmap.CompressFormat.JPEG, scale, byteArrayOutputStream);
+                    break;
+                case 2:
+                    originBitmap.compress(Bitmap.CompressFormat.PNG, scale, byteArrayOutputStream);
+                    break;
+                case 3:
+                    originBitmap.compress(Bitmap.CompressFormat.WEBP, scale, byteArrayOutputStream);
+                    break;
+                default:
+                    break;
+            }
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            newBitmap = BitmapFactory.decodeStream(byteArrayInputStream, null, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return newBitmap;
+    }
+
+    /**
+     * 图片压缩至某一个阈值 threshold 之下
+     * @param originBitmap 输入的原始 Bitmap
+     * @param type   图片压缩格式 1 JPEG 2 PNG 3 WEBP
+     * @Param threshold 压缩到该阈值 保证图片压缩到该阈值下 单位为kb
+     */
+    public static Bitmap compressBitmap2Threshold(Bitmap originBitmap,int type,int threshold){
+        Bitmap newBitmap = null;
+        Bitmap.CompressFormat format = null;
+        if(type == 1){
+            format = Bitmap.CompressFormat.JPEG;
+        } else if(type == 2){
+            format = Bitmap.CompressFormat.PNG;
+        } else {
+            format = Bitmap.CompressFormat.WEBP;
+        }
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            originBitmap.compress(format,100,byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            int length = bytes.length / 1024;
+            //TODO for循环先验证还是先执行
+            for(int i = 90; (i >= 0) && (length > threshold); i = i - 10){
+                byteArrayOutputStream.reset();
+                originBitmap.compress(format,i,byteArrayOutputStream);
+                bytes = byteArrayOutputStream.toByteArray();
+                length = bytes.length / 1024;
+            }
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            newBitmap = BitmapFactory.decodeStream(byteArrayInputStream);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return newBitmap;
+    }
+
+
 }
