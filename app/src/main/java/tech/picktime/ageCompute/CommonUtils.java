@@ -47,10 +47,11 @@ public class CommonUtils {
         return outMetrics.widthPixels;
     }
 
+
     /**
      * 获取屏幕密度
      */
-    public static float getScriptDpi(Context context){
+    public static float getScreeenDpi(Context context){
         float des = context.getResources().getDisplayMetrics().densityDpi;
         return des;
     }

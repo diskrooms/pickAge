@@ -77,13 +77,9 @@ import static android.view.KeyEvent.KEYCODE_BACK;
 public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private static final int STATE_PREVIEW = 0;     //Camera state: Showing camera preview.
-
     private static final int STATE_WAITING_LOCK = 1;        //Camera state: Waiting for the focus to be locked.
-
     private static final int STATE_WAITING_PRECAPTURE = 2;  //Camera state: Waiting for the exposure to be precapture state.
-
     private static final int STATE_WAITING_NON_PRECAPTURE = 3;  //Camera state: Waiting for the exposure state to be something other than precapture.
-
     private static final int STATE_PICTURE_TAKEN = 4;   //Camera state: Picture was taken.
 
     //成员属性
