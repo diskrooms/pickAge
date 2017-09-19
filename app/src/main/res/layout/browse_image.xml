@@ -35,7 +35,7 @@
             android:background="@color/transparent"
             android:scaleType="center" />
 
-        <com.pkmmte.view.CircularImageView
+        <!--<com.pkmmte.view.CircularImageView
             android:id="@+id/share"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -43,7 +43,7 @@
             android:src="@mipmap/ic_share_variant_white_48dp_"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:visibility="invisible"/>
+            android:visibility="invisible"/>-->
     </RelativeLayout>
 
 

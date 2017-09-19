@@ -83,7 +83,7 @@ public class BrowseImageActivity extends AppCompatActivity implements View.OnCli
             //LogUtils.v(path);
             originBitmap = BitmapFactory.decodeFile(path);
             showImage = (ImageView)findViewById(R.id.browseImage);
-            share = (CircularImageView)findViewById(R.id.share);
+            //share = (CircularImageView)findViewById(R.id.share);
             //检测图片旋转角度 如果被旋转了 就再旋转回来
             int degree = CommonUtils.getPicDegree(path);
             Bitmap newBitmap = CommonUtils.rotateBitmapDegree(originBitmap,degree);

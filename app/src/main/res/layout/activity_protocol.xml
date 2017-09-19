@@ -15,6 +15,7 @@
             android:src="@drawable/bg"
             android:scaleType="fitXY"/>
         <TextView
+            android:id="@+id/agree"
             android:text="同意·继续"
             android:textSize="16sp"
             android:textColor="@color/white"
@@ -39,6 +40,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="30dp">
             <CheckBox
+                android:id="@+id/agreeProtocol"
                 android:background="@drawable/checkbox_style"
                 android:button="@null"
                 android:layout_width="wrap_content"
