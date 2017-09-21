@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_photo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="tech.picktime.ageCompute.MainActivity"
+    android:weightSum="1">
+
+    <!--<android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
+        <ImageButton
+            android:id="@+id/backToProtocol"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#fff"
+            app:srcCompat="@drawable/chevron_left" />
+        <TextView
+            android:text=""
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </android.support.v7.widget.Toolbar>-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 图片容器 -->
+        <ImageView
+            android:src="@drawable/wtlw"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scaleType="center" />
+        <ImageButton
+            android:id="@+id/backToProtocol"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/transparent"
+            app:srcCompat="@drawable/chevron_left" />
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/gender"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="您是巍峨的女汉子"
+        android:textColor="@color/colorWhite"
+        android:textSize="15sp"
+        android:padding="5dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/result_gender_corner"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <tech.picktime.ageCompute.CircleTextView
+                android:id="@+id/age"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_alignTop="@+id/openGallery"
+                android:layout_toRightOf="@+id/openGallery"
+                android:padding="5dp"
+                android:text="18"
+                android:textColor="@color/colorWhite"
+                android:textSize="50sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp"
+            android:background="@color/grey">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/genderDesc"
+                android:layout_width="96dp"
+                android:layout_height="150dp"
+                android:layout_alignTop="@+id/openGallery"
+                android:layout_toRightOf="@+id/openGallery"
+                android:background="#00000000"
+                android:padding="5dp"
+                android:text="猜年龄"
+                android:textColor="@color/grey"
+                android:textSize="18sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

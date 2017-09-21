@@ -20,11 +20,12 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BrowseImageActivity"></activity>
-        <activity android:name=".ProtocolActivity"></activity>
+        <activity android:name=".BrowseImageActivity" />
+        <activity android:name=".ProtocolActivity" />
 
         <receiver
             android:name=".AppRegister"
@@ -35,6 +36,7 @@
         </receiver>
 
         <activity android:name=".ProtocolContentActivity" />
+        <activity android:name=".ResultActivity"></activity>
     </application>
 
 </manifest>

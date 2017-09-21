@@ -38,12 +38,16 @@ dependencies {
     compile files('libs/logutil-1.4.2.jar')
 
     compile project(path: ':openCVLibrary330')
+    //2017-09-20添加
+    //2017-09-21添加
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
-    compile 'com.google.code.gson:gson:+'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.dou361.dialogui:jjdxm-dialogui:+'
+    compile 'com.android.support:support-v4:26.+'
     testCompile 'junit:junit:4.12'
 }

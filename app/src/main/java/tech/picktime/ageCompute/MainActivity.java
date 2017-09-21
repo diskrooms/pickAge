@@ -13,6 +13,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.apkfuns.logutils.LogUtils;
+import com.dou361.dialogui.DialogUIUtils;
 import com.google.gson.Gson;
 import com.pkmmte.view.CircularImageView;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -49,10 +52,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import tech.picktime.ageCompute.Utils.HttpUtils;
-import tech.picktime.ageCompute.Utils.ImageUtils;
 
-import static android.R.attr.breadCrumbShortTitle;
-import static android.R.attr.id;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -192,7 +192,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     map.put("return_attributes", "gender,age,beauty");
                     byteMap.put("image_file", buff);
 
-                    try{
+                    try {
+                        //显示加载中...弹出框
+                        DialogUIUtils.showTie(MainActivity.this,"分析中...");
+                        //待子线程获得数据后取消弹出框
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -205,7 +208,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 String resultJson = new String(bach);
                                 Gson gson = new Gson();
                                 JsonParse resultObj = gson.fromJson(resultJson, JsonParse.class);
-                                LogUtils.v(resultObj);
+                                Attributes attributes = resultObj.getFace(0).getAttributes();
+                                Face_rectangle face_rectangle = resultObj.getFace(0).getFace_rectangle();
+                                String gender = attributes.getGender().getValue();
+                                int age = attributes.getAge().getValue();
+                                int height = face_rectangle.getHeight();
+                                int width = face_rectangle.getWidth();
+                                int top = face_rectangle.getTop();
+                                int left = face_rectangle.getLeft();
+
+                                //LogUtils.v(gender);
+                                //LogUtils.v(age);
+                                //LogUtils.v(height);
+                                //LogUtils.v(width);
+                                //LogUtils.v(top);
+                                //LogUtils.v(left);
+                                Message message = new Message();
+                                message.what = 0;
+                                handler.sendMessage(message);
                             }
                         }).start();
 
@@ -312,5 +332,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             path = imagePath;
         }
     }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 0) {
+                DialogUIUtils.dismssTie();
+                startActivity(new Intent(getApplicationContext(),ResultActivity.class));
+            }
+        }
+    };
 
 }
