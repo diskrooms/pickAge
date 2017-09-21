@@ -44,5 +44,6 @@ dependencies {
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
+    compile 'com.google.code.gson:gson:+'
     testCompile 'junit:junit:4.12'
 }

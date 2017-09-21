@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class ImageUtils extends FileUtil{
     /**
-     *  将bitmap保存为图片
+     *  将bitmap保存为图片 注意读写权限
      *  @param bitmap 图片资源
      *  @param path  要保存的位置(路径)
      *  @param scale 压缩比例 0-100
@@ -65,7 +65,7 @@ public class ImageUtils extends FileUtil{
 
     /**
      * bitmap转为base64
-     * @param bitmap
+     * @param bitmap 图片bitmap资源
      * @return
      */
     public static String bitmap2Base64(Bitmap bitmap) {
@@ -93,6 +93,38 @@ public class ImageUtils extends FileUtil{
             }
         }
         return result;
+    }
+
+    /**
+     * bitmap转为bytes 字节流
+     * @param bitmap 图片bitmap资源
+     * @return byte 字节流
+     */
+    public static byte[] bitmap2Bytes(Bitmap bitmap) {
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        byte[] bitmapBytes = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                baos.flush();
+                baos.close();
+                bitmapBytes = baos.toByteArray();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return bitmapBytes;
     }
 
     /**
