@@ -50,6 +50,7 @@ import okhttp3.Response;
 import tech.picktime.ageCompute.Utils.HttpUtils;
 import tech.picktime.ageCompute.Utils.ImageUtils;
 
+import static android.R.attr.breadCrumbShortTitle;
 import static android.R.attr.id;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -169,22 +170,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     //自定义post发送
                     InputStream stream = getResources().openRawResource(R.drawable.wtlw);
-                    ByteArrayOutputStream out = new ByteArrayOutputStream(1000);
-                    byte[] b = new byte[1000];
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    byte[] b = new byte[1000];      //拿一个盆去舀 一直舀
                     int n;
                     try {
                         while ((n = stream.read(b)) != -1) {
                             out.write(b, 0, n);
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         stream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         out.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -269,6 +262,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     intent.putExtra("type",1);
                     startActivityForResult(intent, 1);
                 }
+                break;
+
+            case R.id.photo:
+
+                break;
         }
     }
 
