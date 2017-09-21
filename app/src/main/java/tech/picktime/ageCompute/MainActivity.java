@@ -28,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.apkfuns.logutils.LogUtils;
+import com.google.gson.Gson;
 import com.pkmmte.view.CircularImageView;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 
@@ -201,8 +202,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                String result = new String(bach);
-                                LogUtils.v(result);
+                                String resultJson = new String(bach);
+                                Gson gson = new Gson();
+                                JsonParse resultObj = gson.fromJson(resultJson, JsonParse.class);
+                                LogUtils.v(resultObj);
                             }
                         }).start();
 
