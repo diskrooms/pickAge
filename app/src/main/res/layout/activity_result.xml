@@ -31,13 +31,13 @@
     </android.support.v7.widget.Toolbar>-->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="match_parent"
+        android:layout_weight="1">
         <!-- 图片容器 -->
         <ImageView
             android:src="@drawable/wtlw"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="match_parent"
             android:scaleType="center" />
         <ImageButton
             android:id="@+id/backToProtocol"
@@ -63,7 +63,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_weight="2">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -115,4 +116,11 @@
             </TextView>
         </LinearLayout>
     </LinearLayout>
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/share"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
 </LinearLayout>
