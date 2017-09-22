@@ -60,7 +60,7 @@ public class ProtocolActivity extends AppCompatActivity implements View.OnClickL
                     startActivity(intent_);
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(),"请您勾选用户协议",Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(),"请您勾选用户协议",Toast.LENGTH_LONG).show();
                 }
                 break;
             default:
@@ -71,6 +71,6 @@ public class ProtocolActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        LogUtils.v(b);
+        //LogUtils.v(b);
     }
 }

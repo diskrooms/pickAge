@@ -98,7 +98,7 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:layout_weight="1">
-            <TextView
+            <tech.picktime.ageCompute.CustomUI.TextVertical
                 android:id="@+id/genderDesc"
                 android:layout_width="96dp"
                 android:layout_height="150dp"
@@ -113,7 +113,7 @@
                 android:gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp">
-            </TextView>
+            </tech.picktime.ageCompute.CustomUI.TextVertical>
         </LinearLayout>
     </LinearLayout>
     <ImageView

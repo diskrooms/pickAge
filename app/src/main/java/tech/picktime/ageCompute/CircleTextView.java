@@ -8,25 +8,35 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.util.AttributeSet;
 import android.support.v7.widget.AppCompatTextView;
 
+import com.apkfuns.logutils.LogUtils;
+
 /**
  * Created by jsb-hdp-0 on 2017/8/18.
  */
 public class CircleTextView extends AppCompatTextView {
     private Paint mBgPaint = new Paint();
+    private int background;
     PaintFlagsDrawFilter pfd = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
+
     public CircleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+
     public CircleTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        /*int colorId = attrs.getAttributeResourceValue(null,"background",0);
+        background = getResources().getColor(colorId,null);
+        LogUtils.v(background);*/
         mBgPaint.setColor(Color.parseColor("#ffccddff"));
         mBgPaint.setAntiAlias(true);
     }
+
     public CircleTextView(Context context) {
         super(context);
         mBgPaint.setColor(Color.parseColor("#ffccddff"));
         mBgPaint.setAntiAlias(true);
     }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -35,6 +45,7 @@ public class CircleTextView extends AppCompatTextView {
         int max = Math.max(measuredWidth, measuredHeight);
         setMeasuredDimension(max, max);
     }
+
     @Override
     public void setBackgroundColor(int color) {
         mBgPaint.setColor(color);
@@ -46,6 +57,7 @@ public class CircleTextView extends AppCompatTextView {
     public void setNotifiText(int text){
         setText(text+"");
     }
+
     @Override
     public void draw(Canvas canvas) {
         canvas.setDrawFilter(pfd);//给Canvas加上抗锯齿标志
