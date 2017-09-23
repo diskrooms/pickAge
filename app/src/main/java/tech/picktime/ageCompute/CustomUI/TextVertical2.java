@@ -30,7 +30,7 @@ public class TextVertical2 extends AppCompatTextView {
     }
 
     public void onDraw(Canvas canvas){
-        String text = "窈窕淑女";
+        String text = "窈窕淑女窈窕淑女窈窕淑女窈窕淑女窈窕淑女窈窕淑女";
         Paint mPaint = new Paint();
         mPaint.setColor(Color.YELLOW);
         canvas.drawRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), mPaint);
@@ -44,23 +44,22 @@ public class TextVertical2 extends AppCompatTextView {
 
         float w;
         float top = 18;
-        float left = 3;
+        float left = getWidth()-10;
 
         final int len = text.length();
         float py = 0 + top;
+
         for(int i=0; i<len; i ++){
             char c = text.charAt(i);
             w = mPaint.measureText(text, i, i+1);//获取字符宽度
             StringBuffer b = new StringBuffer();
             b.append(c);
-            if(py > 81){//定义字的范围
+            /*if(py > 81){//定义字的范围
                 return;
-            }
+            }*/
             if(isChinese(c)){
                 py += w;
-                if(py > 81){
-                    return;
-                }
+
                 canvas.drawText(b.toString(), left, py, mPaint); //中文处理方法
             }else {
                 canvas.drawTextOnPath(b.toString(), path, py, -left-2, mPaint);//其他文字处理方法

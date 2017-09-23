@@ -115,12 +115,13 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp">
             </tech.picktime.ageCompute.CustomUI.TextVertical>-->
-            <tech.picktime.ageCompute.CustomUI.TextVertical2
-                android:id="@+id/genderDesc"
+            <TextView
+                android:id="@+id/poem"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
+                android:gravity="center"
                 android:padding="10dp">
-            </tech.picktime.ageCompute.CustomUI.TextVertical2>
+            </TextView>
         </LinearLayout>
     </LinearLayout>
     <ImageView
