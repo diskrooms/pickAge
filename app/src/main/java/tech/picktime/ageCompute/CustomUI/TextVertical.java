@@ -44,7 +44,7 @@ public class TextVertical extends View {
     private String text="";//待显示的文字
     private Handler mHandler=null;
     private Matrix matrix;
-    BitmapDrawable drawable = (BitmapDrawable) getBackground();
+
     public TextVertical(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -123,11 +123,7 @@ public class TextVertical extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Log.v("TextViewVertical","onDraw");
-        if(drawable!=null){
-            //画背景
-            Bitmap b = Bitmap.createBitmap(drawable.getBitmap(),0,0,mTextWidth,mTextHeight);
-            canvas.drawBitmap(b, matrix, paint);
-        }
+
         //画字
         draw(canvas, this.text);
     }

@@ -9,4 +9,7 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="TextVertical2">
+        <attr name="bgColor" format="string" />
+    </declare-styleable>
 </resources>

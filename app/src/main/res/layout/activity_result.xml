@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tech="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_photo"
@@ -98,7 +99,7 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:layout_weight="1">
-            <tech.picktime.ageCompute.CustomUI.TextVertical
+            <!--<tech.picktime.ageCompute.CustomUI.TextVertical
                 android:id="@+id/genderDesc"
                 android:layout_width="96dp"
                 android:layout_height="150dp"
@@ -113,7 +114,13 @@
                 android:gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp">
-            </tech.picktime.ageCompute.CustomUI.TextVertical>
+            </tech.picktime.ageCompute.CustomUI.TextVertical>-->
+            <tech.picktime.ageCompute.CustomUI.TextVertical2
+                android:id="@+id/genderDesc"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:padding="10dp">
+            </tech.picktime.ageCompute.CustomUI.TextVertical2>
         </LinearLayout>
     </LinearLayout>
     <ImageView
