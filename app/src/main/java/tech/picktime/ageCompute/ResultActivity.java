@@ -15,6 +15,6 @@ public class ResultActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_result);
         poemTextView = (TextView)findViewById(R.id.poem);
-        poemTextView.setText("童孙未解供耕织\r\n也傍桑阴学种瓜\t\t\t\t\t\t\t\t");
+        poemTextView.setText("童孙未解供耕织\r\n也傍桑阴学种瓜\u3000\u3000");       //\u0020 半角空格相当于半个汉字  \u3000 全角空格相当于一个汉字 \t 四分之一个汉字
     }
 }
